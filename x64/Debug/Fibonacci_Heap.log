@@ -1,5 +1,3 @@
-﻿  main.c
-D:\University\Practice\Fibonacci_Heap\main.c(11,10): warning C4129: O: неизвестная escape-последовательность
-D:\University\Practice\Fibonacci_Heap\main.c(48,17): warning C4133: функция: несовместимые типы - из "int *" в "const char *const "
-D:\University\Practice\Fibonacci_Heap\main.c(52,39): warning C4020: decreaseKey: слишком много фактических параметров
+﻿  tests.cpp
+D:\University\Practice\Fibonacci_Heap\tests.cpp(18,26): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
   Fibonacci_Heap.vcxproj -> D:\University\Practice\Fibonacci_Heap\x64\Debug\Fibonacci_Heap.exe

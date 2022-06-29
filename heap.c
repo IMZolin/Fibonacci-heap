@@ -57,17 +57,6 @@ void Display(fibonacci_heap_t* f_h)
 		} while (x != node && x->right != NULL);
 		printf("\n The Fibonacci heap has %d nodes\n", f_h->maxNodes);
 	}
-	/*for (x = node;; x = x->right)
-	{
-		if (x->child == NULL)
-			printf("Node without child (%d) \n", x->key);
-		else {
-			printf("Node (%d) with child (%d)\n", x->key, x->child->key);
-			Desplay(x->child);
-		}
-		if (x->right == node)
-			break;
-	}*/
 }
 
 node_t* findMin(fibonacci_heap_t* f_h)
@@ -195,23 +184,28 @@ void Consolidate(fibonacci_heap_t* f_h)
 node_t* extractMin(fibonacci_heap_t* f_h)
 {
 	if (f_h->heap == NULL)
-		printf("\n The heap is empty");
+		printf("\n The heap is empty\n");
 	else {
 		node_t* tmp = f_h->heap;
 		node_t* pntr;
 		pntr = tmp;
 		node_t* x = NULL;
-		do {
-			pntr = x ->right;
-			(f_h->heap->left)->right = x;
-			x->right = f_h->heap;
-			x->left = f_h->heap->left;
-			f_h->heap->left = x;
-			if (x->key < f_h->heap->key)
-				f_h->heap = x;
-			x->parent = NULL;
-			x = pntr;
-		} while (pntr != tmp->child);
+		if (tmp->child != NULL)
+		{
+			x = tmp->child;
+			do {
+				pntr = x->right;
+				(f_h->heap->left)->right = x;
+				x->right = f_h->heap;
+				x->left = f_h->heap->left;
+				f_h->heap->left = x;
+				if (x->key < f_h->heap->key)
+					f_h->heap = x;
+				x->parent = NULL;
+				x = pntr;
+			} while (pntr != tmp->child);
+		}
+		
 		(tmp->left)->right = tmp->right;
 		(tmp->right)->left = tmp->left;
 		f_h->heap = tmp->right;
@@ -257,62 +251,72 @@ void cascadingCut(fibonacci_heap_t* f_h, node_t* parent_node)
 	}
 }
 
-void decreaseKey(fibonacci_heap_t* f_h, node_t* node_decreased, int new_key)
+node_t* Find(node_t* heap, int value)
 {
-	node_t* parent_node;
-	if (f_h == NULL)
+	node_t* x = heap;
+	node_t* p = NULL;
+	x->visited = true;
+	if (x->key == value)
 	{
-		printf("\n The Fibonacci heap has not been created yet");
-		return;
+		p = x;
+		x->visited = false;
+		return p;
 	}
-	if (node_decreased == NULL)
-		printf("Node is not in the heap");
-	else {
-		if (node_decreased->key < new_key)
-			printf("\nInvalid new key for decrease key operation\n");
-		else {
-			node_decreased->key = new_key;
-			parent_node = node_decreased->parent;
-			if ((parent_node != NULL) && (node_decreased->key < parent_node->key)) {
-				Cut(f_h, node_decreased, parent_node);
-				cascadingCut(f_h, parent_node);
-			}
-			if (node_decreased->key < f_h->heap->key)
-				f_h->heap = node_decreased;
-		}
+	if (p == NULL)
+	{
+		if (x->child != NULL)
+			p = Find(x->child, value);
+		if ((x->right)->visited != true)
+			p = Find(x->right, value);
 	}
+	x->visited = false;
+	return p;
 }
 
-void Find(fibonacci_heap_t* f_h, int key, int new_key)
+bool decreaseKey(fibonacci_heap_t* f_h, int key, int new_key)
 {
-	node_t* node = f_h->heap;
-	node_t* f = NULL;
-	node->visited = true;
-	if (node->key == key)
+	node_t* y;
+	if (f_h->heap == NULL)
 	{
-		node->visited = false;
-		f = node;
-		decreaseKey(f_h, f, new_key);
+		printf("The Heap is Empty\n");
+		return 0;
 	}
-	if (node->child != NULL)
-		Find(f_h, node->child, key, new_key);
-	if ((node->right->visited != true))
-		Find(f_h, node->right, key, new_key);
-	node->visited = false;
+	node_t* ptr = Find(f_h->heap, key);
+	if (ptr == NULL)
+	{
+		printf("Node not found in the Heap\n");
+		return 1;
+	}
+
+	if (ptr->key < new_key)
+	{
+		printf("Entered key greater than current key\n");
+		return 0;
+	}
+	ptr->key = new_key;
+	y = ptr->parent;
+	if (y != NULL && ptr->key < y->key)
+	{
+		Cut(f_h, ptr, y);
+		cascadingCut(f_h, y);
+	}
+
+	if (ptr->key < f_h->heap->key)
+		f_h->heap = ptr;
+
+	return 0;
 }
 
 void Delete(fibonacci_heap_t* f_h, int value)
 {
-	node_t* node = f_h->heap;
-	node_t* p = NULL;
-	if (node == NULL)
-		printf("The heap is empty\n");
-	else {
-		Find(f_h,value,-5000);
-		p = extractMin(f_h);
-		if (p != NULL)
-			printf("\nNode was deleted");
-		else
-			printf("\nNode wasn't deleted");
-	}
+	node_t* m = NULL;
+	bool t = decreaseKey(f_h, value, -5000);
+	if (!t)
+		m = extractMin(f_h);
+	if (m != NULL)
+		printf("Node was deleted\n");
+	else
+		printf("Node wasn't deleted\n");
+	return 0;
 }
+

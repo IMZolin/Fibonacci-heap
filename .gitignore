@@ -8,3 +8,5 @@
 *.suo
 *.db
 /x64
+/packages
+packages.config

@@ -1,3 +1,0 @@
-﻿  tests.cpp
-D:\University\Practice\Fibonacci_Heap\tests.cpp(18,26): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
-  Fibonacci_Heap.vcxproj -> D:\University\Practice\Fibonacci_Heap\x64\Debug\Fibonacci_Heap.exe
